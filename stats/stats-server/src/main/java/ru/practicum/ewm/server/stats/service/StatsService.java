@@ -15,7 +15,7 @@ import java.util.List;
 public class StatsService {
 
     private final StatsRepository statsRepository;
-    private final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public StatsService(StatsRepository statsRepository) {
@@ -28,8 +28,8 @@ public class StatsService {
     }
 
     public List<ViewStats> getStats(String start, String end, List<String> uris, Boolean unique) {
-        LocalDateTime startDate = LocalDateTime.parse(start, DTF);
-        LocalDateTime endDate = LocalDateTime.parse(end, DTF);
+        LocalDateTime startDate = LocalDateTime.parse(start, dtf);
+        LocalDateTime endDate = LocalDateTime.parse(end, dtf);
         if (unique) {
             return statsRepository.searchUniqueViewStatsWithUris(startDate, endDate, uris);
         } else {

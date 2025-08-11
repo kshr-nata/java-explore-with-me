@@ -10,7 +10,7 @@ import java.util.List;
 public interface StatsRepository extends JpaRepository<StatRecord, Integer> {
 
     @Query("select new ru.practicum.ewm.dto.stats.ViewStats(sr.app, sr.uri, count(sr.id))" +
-            "from StatRecord sr "+
+            "from StatRecord sr " +
             "WHERE sr.timestamp BETWEEN :start AND :end " +
             "AND (:uris IS NULL OR sr.uri IN :uris) " +
             "GROUP BY sr.app, sr.uri ")
