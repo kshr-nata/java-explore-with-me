@@ -1,4 +1,4 @@
-package ru.practicum.ewm.stats.repository;
+package ru.practicum.ewm.server.stats.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

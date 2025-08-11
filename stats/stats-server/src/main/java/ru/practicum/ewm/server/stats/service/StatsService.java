@@ -1,11 +1,11 @@
-package ru.practicum.ewm.stats.service;
+package ru.practicum.ewm.server.stats.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.stats.EndpointHit;
 import ru.practicum.ewm.dto.stats.ViewStats;
-import ru.practicum.ewm.stats.repository.StatRecord;
-import ru.practicum.ewm.stats.repository.StatsRepository;
+import ru.practicum.ewm.server.stats.repository.StatRecord;
+import ru.practicum.ewm.server.stats.repository.StatsRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

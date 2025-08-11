@@ -1,8 +1,7 @@
-package ru.practicum.ewm.stats.controller;
+package ru.practicum.ewm.server.stats.controller;
 
 import jakarta.validation.Valid;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.stats.EndpointHit;
 import ru.practicum.ewm.dto.stats.ViewStats;
-import ru.practicum.ewm.stats.service.StatsService;
+import ru.practicum.ewm.server.stats.service.StatsService;
 
 import java.util.List;
 
