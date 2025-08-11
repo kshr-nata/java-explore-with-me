@@ -1,7 +1,5 @@
 package ru.practicum.ewm.dto.stats;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.*;
 import java.time.LocalDateTime;
 
