@@ -13,7 +13,8 @@ public interface StatsRepository extends JpaRepository<StatRecord, Integer> {
             "from StatRecord sr " +
             "WHERE sr.timestamp BETWEEN :start AND :end " +
             "AND (:uris IS NULL OR sr.uri IN :uris) " +
-            "GROUP BY sr.app, sr.uri ")
+            "GROUP BY sr.app, sr.uri " +
+            "ORDER BY COUNT(sr.id) DESC ")
     List<ViewStats> searchViewStatsWithUris(@Param("start") LocalDateTime start,
                                             @Param("end") LocalDateTime end,
                                             @Param("uris") List<String> uris);
@@ -23,7 +24,8 @@ public interface StatsRepository extends JpaRepository<StatRecord, Integer> {
             "FROM StatRecord sr " +
             "WHERE sr.timestamp BETWEEN :start AND :end " +
             "AND (:uris IS NULL OR sr.uri IN :uris) " +
-            "GROUP BY sr.app, sr.uri ")
+            "GROUP BY sr.app, sr.uri " +
+            "ORDER BY COUNT(DISTINCT sr.ip) DESC ")
     List<ViewStats> searchUniqueViewStatsWithUris(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
