@@ -6,7 +6,6 @@ spring:
     url: jdbc:postgresql://stats-db:6543/ewm_stats_db
     username: user
     password: password
-    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop

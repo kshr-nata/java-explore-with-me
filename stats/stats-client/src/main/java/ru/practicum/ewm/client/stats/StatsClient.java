@@ -3,6 +3,7 @@ package ru.practicum.ewm.client.stats;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,25 +25,21 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class StatsClient {
 
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Value("${spring.application.name}")
-    private String application;
+    private final String application;
 
     @Value("${service.stats-service.uri:http://localhost:9090}")
-    private String statsServiceUri;
+    private final String statsServiceUri;
 
     private final ObjectMapper json;
-    private final HttpClient httpClient;
-
-    public StatsClient(ObjectMapper json) {
-        this.json = json;
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(2))
-                .build();
-    }
+    private final HttpClient httpClient = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(2))
+            .build();
 
     public void hit(HttpServletRequest userRequest) {
         EndpointHit hit = EndpointHit.builder()
