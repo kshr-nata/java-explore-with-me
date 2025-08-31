@@ -894,7 +894,7 @@
                 "example": {
                   "status": "BAD_REQUEST",
                   "reason": "Incorrectly made request.",
-                  "message": "Failed to convert value of type java.lang.String to required type long; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "message": "Failed to convert value of type java.lang.String to required type integer; nested exception is java.lang.NumberFormatException: For input string: ad",
                   "timestamp": "2022-09-07 09:10:50"
                 },
                 "schema": {
@@ -1035,7 +1035,7 @@
                 "example": {
                   "status": "BAD_REQUEST",
                   "reason": "Incorrectly made request.",
-                  "message": "Failed to convert value of type java.lang.String to required type long; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "message": "Failed to convert value of type java.lang.String to required type integer; nested exception is java.lang.NumberFormatException: For input string: ad",
                   "timestamp": "2022-09-07 09:10:50"
                 },
                 "schema": {
@@ -1468,7 +1468,7 @@
                 "example": {
                   "status": "BAD_REQUEST",
                   "reason": "Incorrectly made request.",
-                  "message": "Failed to convert value of type java.lang.String to required type long; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "message": "Failed to convert value of type java.lang.String to required type integer; nested exception is java.lang.NumberFormatException: For input string: ad",
                   "timestamp": "2022-09-07 09:10:50"
                 },
                 "schema": {
@@ -1802,7 +1802,7 @@
                 "example": {
                   "status": "BAD_REQUEST",
                   "reason": "Incorrectly made request.",
-                  "message": "Failed to convert value of type java.lang.String to required type long; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "message": "Failed to convert value of type java.lang.String to required type integer; nested exception is java.lang.NumberFormatException: For input string: ad",
                   "timestamp": "2022-09-07 09:10:50"
                 },
                 "schema": {
@@ -1876,7 +1876,7 @@
                 "example": {
                   "status": "BAD_REQUEST",
                   "reason": "Incorrectly made request.",
-                  "message": "Failed to convert value of type java.lang.String to required type long; nested exception is java.lang.NumberFormatException: For input string: ad",
+                  "message": "Failed to convert value of type java.lang.String to required type integer; nested exception is java.lang.NumberFormatException: For input string: ad",
                   "timestamp": "2022-09-07 09:10:50"
                 },
                 "schema": {
@@ -2053,8 +2053,8 @@
               "412 PRECONDITION_FAILED",
               "413 PAYLOAD_TOO_LARGE",
               "413 REQUEST_ENTITY_TOO_LARGE",
-              "414 URI_TOO_LONG",
-              "414 REQUEST_URI_TOO_LONG",
+              "414 URI_TOO_INTEGER",
+              "414 REQUEST_URI_TOO_INTEGER",
               "415 UNSUPPORTED_MEDIA_TYPE",
               "416 REQUESTED_RANGE_NOT_SATISFIABLE",
               "417 EXPECTATION_FAILED",

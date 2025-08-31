@@ -25,21 +25,25 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class StatsClient {
 
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Value("${spring.application.name}")
-    private final String application;
+    private String application;
 
     @Value("${service.stats-service.uri:http://localhost:9090}")
-    private final String statsServiceUri;
+    private String statsServiceUri;
 
     private final ObjectMapper json;
-    private final HttpClient httpClient = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(2))
-            .build();
+    private final HttpClient httpClient;
+
+    public StatsClient(ObjectMapper json) {
+        this.json = json;
+        this.httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(2))
+                .build();
+    }
 
     public void hit(HttpServletRequest userRequest) {
         EndpointHit hit = EndpointHit.builder()
