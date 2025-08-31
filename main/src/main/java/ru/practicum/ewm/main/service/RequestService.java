@@ -30,7 +30,7 @@ public class RequestService {
         this.userRepository = userRepository;
     }
 
-    public List<Request>  getEventRequests(Integer userId, Integer eventId) {
+    public List<Request> getEventRequests(Integer userId, Integer eventId) {
         // 1. Проверяем, что событие существует и принадлежит пользователю
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new NotFoundException(
@@ -125,7 +125,7 @@ public class RequestService {
                 .orElseThrow(() -> new NotFoundException("Заявка с id=" + requestId + " не найдена"));
 
         // 3. Проверяем, что заявка принадлежит пользователю
-        if (!request.getRequester().equals(userId)) {
+        if (!request.getRequester().getId().equals(userId)) {
             throw new NotFoundException("Заявка не принадлежит пользователю");
         }
 
@@ -223,7 +223,7 @@ public class RequestService {
 
     private void validateRequestsBelongToEvent(List<Request> requests, Integer eventId) {
         for (Request request : requests) {
-            if (!request.getEvent().equals(eventId)) {
+            if (!request.getEvent().getId().equals(eventId)) {
                 throw new ConflictException(
                         String.format("Заявка с id=%d не принадлежит событию с id=%d", request.getId(), eventId));
             }
