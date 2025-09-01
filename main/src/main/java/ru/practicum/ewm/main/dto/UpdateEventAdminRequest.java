@@ -24,7 +24,7 @@ public class UpdateEventAdminRequest {
     private Location location;
     private Boolean paid;
     @PositiveOrZero(message = "Лимит участников должен быть положительным числом или нулём")
-    private Integer participantLimit;
+    private Long participantLimit;
     private Boolean requestModeration;
     private EventStateAction stateAction;
     @Size(min = 3, max = 120, message = "Количество символов в поле title от 20 до 2000")

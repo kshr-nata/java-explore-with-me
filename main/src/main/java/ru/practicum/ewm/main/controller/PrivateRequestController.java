@@ -22,23 +22,23 @@ public class PrivateRequestController {
     }
 
     @GetMapping
-    public List<Request> getUserRequests(@PathVariable Integer userId) {
+    public List<Request> getUserRequests(@PathVariable Long userId) {
         log.info("GET /users/{}/requests", userId);
         return requestService.getUserRequests(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Request createRequest(@PathVariable Integer userId,
-                                                 @RequestParam Integer eventId) {
+    public Request createRequest(@PathVariable Long userId,
+                                                 @RequestParam Long eventId) {
         log.info("POST /users/{}/requests?eventId={}", userId, eventId);
         return requestService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
     public Request cancelRequest(
-            @PathVariable Integer userId,
-            @PathVariable Integer requestId) {
+            @PathVariable Long userId,
+            @PathVariable Long requestId) {
 
         log.info("PATCH /users/{}/requests/{}/cancel", userId, requestId);
         return requestService.cancelRequest(userId, requestId);

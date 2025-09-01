@@ -30,7 +30,7 @@ public class RequestService {
         this.userRepository = userRepository;
     }
 
-    public List<Request> getEventRequests(Integer userId, Integer eventId) {
+    public List<Request> getEventRequests(Long userId, Long eventId) {
         // 1. Проверяем, что событие существует и принадлежит пользователю
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new NotFoundException(
@@ -39,7 +39,7 @@ public class RequestService {
         return requestRepository.findByEventId(eventId);
     }
 
-    public EventRequestStatusUpdateResult updateRequestStatuses(Integer userId, Integer eventId,
+    public EventRequestStatusUpdateResult updateRequestStatuses(Long userId, Long eventId,
                                                                 EventRequestStatusUpdateRequest updateRequest) {
         // 1. Проверяем, что событие существует и принадлежит пользователю
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
@@ -60,7 +60,7 @@ public class RequestService {
         }
     }
 
-    public List<Request> getUserRequests(Integer userId) {
+    public List<Request> getUserRequests(Long userId) {
         // Проверяем существование пользователя
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
@@ -70,7 +70,7 @@ public class RequestService {
         return requestRepository.findByRequesterId(userId);
     }
 
-    public Request createRequest(Integer userId, Integer eventId) {
+    public Request createRequest(Long userId, Long eventId) {
         // 1. Проверяем существование пользователя
         User requester = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
@@ -97,7 +97,7 @@ public class RequestService {
 
         // 6. Проверяем лимит участников (если есть)
         if (event.getParticipantLimit() > 0) {
-            int confirmedCount = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+            long confirmedCount = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
             if (confirmedCount >= event.getParticipantLimit()) {
                 throw new ConflictException("Лимит участников для события исчерпан");
             }
@@ -114,7 +114,7 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
-    public Request cancelRequest(Integer userId, Integer requestId) {
+    public Request cancelRequest(Long userId, Long requestId) {
         // 1. Проверяем существование пользователя
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
@@ -152,8 +152,8 @@ public class RequestService {
         }
 
         // Проверяем, не достигнут ли лимит
-        int confirmedCount = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
-        int availableSlots = event.getParticipantLimit() - confirmedCount;
+        long confirmedCount = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
+        long availableSlots = event.getParticipantLimit() - confirmedCount;
 
         if (availableSlots <= 0) {
             throw new ConflictException("Лимит заявок для события исчерпан");
@@ -221,7 +221,7 @@ public class RequestService {
         return event.getParticipantLimit() != 0 && event.getRequestModeration();
     }
 
-    private void validateRequestsBelongToEvent(List<Request> requests, Integer eventId) {
+    private void validateRequestsBelongToEvent(List<Request> requests, Long eventId) {
         for (Request request : requests) {
             if (!request.getEvent().getId().equals(eventId)) {
                 throw new ConflictException(
@@ -230,7 +230,7 @@ public class RequestService {
         }
     }
 
-    private void rejectPendingRequests(Integer eventId) {
+    private void rejectPendingRequests(Long eventId) {
         List<Request> pendingRequests = requestRepository.findByEventIdAndStatus(eventId, RequestStatus.PENDING);
         for (Request request : pendingRequests) {
             request.setStatus(RequestStatus.REJECTED);

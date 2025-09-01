@@ -31,7 +31,7 @@ public class CategoryService {
         return categoryRepository.save(CategoryMapper.mapToCategory(newCategoryDto));
     }
 
-    public void deleteById(int id) {
+    public void deleteById(long id) {
         Category category = categoryRepository.findById(id).orElseThrow(()
                 -> new NotFoundException(String.format("Category with id=%d was not found",
                 id)));
@@ -41,7 +41,7 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    public Category update(Integer id, NewCategoryDto newCategoryDto) {
+    public Category update(Long id, NewCategoryDto newCategoryDto) {
         Category category = categoryRepository.findById(id).orElseThrow(()
                 -> new NotFoundException(String.format("Category with id=%d was not found",
                 id)));
@@ -49,7 +49,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    public Category getCategoryById(Integer categoryId) {
+    public Category getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NotFoundException(String.format("Category with id=%d was not found",
                         categoryId)));

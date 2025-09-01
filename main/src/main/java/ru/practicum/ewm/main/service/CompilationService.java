@@ -59,13 +59,13 @@ public class CompilationService {
             List<Event> events = eventRepository.findEventsByCompilationId(compilation.getId());
 
             // 3. Получаем views из статистического сервиса
-            Map<Integer, Integer> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+            Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
 
             // 4. Заполняем transient поля
             events.forEach(event -> {
                 event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-                Integer eventViews = views.get(event.getId());
-                event.setViews(eventViews != null ? eventViews.intValue() : 0);
+                Long eventViews = views.get(event.getId());
+                event.setViews(eventViews != null ? eventViews : 0);
             });
 
             // 5. Преобразуем в DTO
@@ -78,20 +78,20 @@ public class CompilationService {
         return compilationDtos;
     }
 
-    public CompilationDto getCompilationById(Integer compId) {
+    public CompilationDto getCompilationById(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id=" + compId + " не найдена"));
 
         List<Event> events = eventRepository.findEventsByCompilationId(compilation.getId());
 
         // 3. Получаем views из статистического сервиса
-        Map<Integer, Integer> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-            Integer eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.intValue() : 0);
+            Long eventViews = views.get(event.getId());
+            event.setViews(eventViews != null ? eventViews : 0);
         });
 
         // 5. Преобразуем в DTO
@@ -112,7 +112,7 @@ public class CompilationService {
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             List<Event> events = eventRepository.findAllById(
                     newCompilationDto.getEvents().stream()
-                            .map(Integer::valueOf)
+                            .map(Long::valueOf)
                             .collect(Collectors.toList())
             );
             compilation.setEvents(events);
@@ -126,13 +126,13 @@ public class CompilationService {
         List<Event> events = eventRepository.findEventsByCompilationId(compilation.getId());
 
         // 3. Получаем views из статистического сервиса
-        Map<Integer, Integer> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-            Integer eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.intValue() : 0);
+            Long eventViews = views.get(event.getId());
+            event.setViews(eventViews != null ? eventViews : 0);
         });
 
         // 5. Преобразуем в DTO
@@ -144,7 +144,7 @@ public class CompilationService {
         return CompilationMapper.mapToCompilationDto(savedCompilation, eventDtos);
     }
 
-    public void deleteCompilation(Integer compId) {
+    public void deleteCompilation(Long compId) {
         // 1. Проверяем существование подборки
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id=" + compId + " не найдена"));
@@ -155,7 +155,7 @@ public class CompilationService {
         log.info("Подборка с id={} успешно удалена", compId);
     }
 
-    public CompilationDto updateCompilation(Integer compId, NewCompilationDto updateRequest) {
+    public CompilationDto updateCompilation(Long compId, NewCompilationDto updateRequest) {
         // 1. Находим подборку
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id=" + compId + " не найдена"));
@@ -166,9 +166,7 @@ public class CompilationService {
 
         if (updateRequest.getEvents() != null && !updateRequest.getEvents().isEmpty()) {
             List<Event> events = eventRepository.findAllById(
-                    updateRequest.getEvents().stream()
-                            .map(Integer::valueOf)
-                            .collect(Collectors.toList())
+                    updateRequest.getEvents()
             );
             compilation.setEvents(events);
         } else {
@@ -181,13 +179,13 @@ public class CompilationService {
         List<Event> events = eventRepository.findEventsByCompilationId(compilation.getId());
 
         // 3. Получаем views из статистического сервиса
-        Map<Integer, Integer> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-            Integer eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.intValue() : 0);
+            Long eventViews = views.get(event.getId());
+            event.setViews(eventViews != null ? eventViews : 0);
         });
 
         // 5. Преобразуем в DTO
@@ -210,21 +208,21 @@ public class CompilationService {
             List<String> uris = compilationDto.getEvents().stream()
                     .map(event -> "/events/" + event.getId())
                     .collect(Collectors.toList());
-            List<Integer> eventIds = compilationDto.getEvents().stream()
+            List<Long> eventIds = compilationDto.getEvents().stream()
                     .map(EventShortDto::getId)
                     .collect(Collectors.toList());
-            Map<Integer, Integer> viewsMap = new HashMap<>();
+            Map<Long, Long> viewsMap = new HashMap<>();
             if (earliestPublishedDate != null) {
                 viewsMap = getViewsForEvents(eventIds);
             }
             for (EventShortDto eventDto : compilationDto.getEvents()) {
-                eventDto.setViews(viewsMap.getOrDefault(eventDto.getId(), 0));
+                eventDto.setViews(viewsMap.getOrDefault(eventDto.getId(), 0L));
             }
         }
         return compilationDto;
     }
 
-    private Map<Integer, Integer> getViewsForEvents(List<Integer> eventIds) {
+    private Map<Long, Long> getViewsForEvents(List<Long> eventIds) {
         // Создаем URI для событий в формате /events/{id}
         List<String> uris = eventIds.stream()
                 .map(id -> "/events/" + id)
@@ -249,10 +247,10 @@ public class CompilationService {
                 ));
     }
 
-    private Integer extractEventIdFromUri(String uri) {
+    private Long extractEventIdFromUri(String uri) {
         try {
             String[] parts = uri.split("/");
-            return Integer.parseInt(parts[parts.length - 1]);
+            return Long.parseLong(parts[parts.length - 1]);
         } catch (Exception e) {
             return null;
         }

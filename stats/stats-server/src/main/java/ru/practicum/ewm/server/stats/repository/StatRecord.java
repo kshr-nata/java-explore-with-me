@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class StatRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     @NonNull
     private String app;
     @NonNull

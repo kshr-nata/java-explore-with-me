@@ -6,10 +6,10 @@ import ru.practicum.ewm.main.model.User;
 
 import java.util.List;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     void deleteById(int id);
 
-    List<User> findByIdIn(List<Integer> ids, Pageable pageable);
+    List<User> findByIdIn(List<Long> ids, Pageable pageable);
 
 }

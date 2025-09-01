@@ -25,7 +25,7 @@ public class PublicEventController {
     @GetMapping
     public List<EventShortDto> getEvents(
             @RequestParam(required = false) String text,
-            @RequestParam(required = false) List<Integer> categories,
+            @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) Boolean paid,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
@@ -43,7 +43,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
+    public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
         log.info("GET /events/{}", id);
 
         return eventService.getPublishedEventById(id, request);

@@ -23,14 +23,14 @@ public class UserService {
             return userRepository.save(user);
         }
 
-        public void deleteUser(Integer userId) {
+        public void deleteUser(Long userId) {
             if (!userRepository.existsById(userId)) {
                 throw new NotFoundException("User with id " + userId + " not found");
             }
             userRepository.deleteById(userId);
         }
 
-    public List<User> getUsers(List<Integer> ids, Integer from, Integer size) {
+    public List<User> getUsers(List<Long> ids, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size, Sort.by("id").ascending());
 
         if (ids != null && !ids.isEmpty()) {
@@ -42,7 +42,7 @@ public class UserService {
         }
     }
 
-        public User getUserById(Integer userId) {
+        public User getUserById(Long userId) {
             return userRepository.findById(userId)
                     .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
         }

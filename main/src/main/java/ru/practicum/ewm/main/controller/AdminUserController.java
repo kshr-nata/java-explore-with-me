@@ -25,13 +25,13 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Integer userId) {
+    public void deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
     }
 
     @GetMapping
     public List<User> getUsers(
-            @RequestParam(required = false) List<Integer> ids,
+            @RequestParam(required = false) List<Long> ids,
             @RequestParam(defaultValue = "0") Integer from,
             @RequestParam(defaultValue = "10") Integer size) {
 

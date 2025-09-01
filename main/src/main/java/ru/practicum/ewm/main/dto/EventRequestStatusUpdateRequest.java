@@ -12,7 +12,7 @@ import java.util.List;
 public class EventRequestStatusUpdateRequest {
 
     @NotEmpty(message = "Список requestIds не может быть пустым")
-    List<Integer> requestIds;
+    List<Long> requestIds;
 
     @NotNull(message = "Статус не может быть null")
     @Pattern(regexp = "CONFIRMED|REJECTED", message = "Можно устанавливать только статусы CONFIRMED или REJECTED")

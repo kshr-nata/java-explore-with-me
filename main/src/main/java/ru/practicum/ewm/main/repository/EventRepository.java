@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface EventRepository extends JpaRepository<Event, Integer> {
+public interface EventRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findByCategoryId(Integer categoryId);
+    List<Event> findByCategoryId(Long categoryId);
 
     @Query("""
     SELECT e
@@ -21,7 +21,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     JOIN comp.events e
     WHERE comp.id = :compilationId
     """)
-    List<Event> findEventsByCompilationId(@Param("compilationId") Integer compilationId);
+    List<Event> findEventsByCompilationId(@Param("compilationId") Long compilationId);
 
     @Query("SELECT e FROM Event e " +
             "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
@@ -30,20 +30,20 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (:rangeStart IS NULL OR e.eventDate >= :rangeStart) " +
             "AND (:rangeEnd IS NULL OR e.eventDate <= :rangeEnd)")
     List<Event> findEventsByAdminFilters(
-            @Param("users") List<Integer> users,
+            @Param("users") List<Long> users,
             @Param("states") List<EventState> states,
-            @Param("categories") List<Integer> categories,
+            @Param("categories") List<Long> categories,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             Pageable pageable);
 
     @Query("SELECT COUNT(r) FROM Request r " +
             "WHERE r.event.id = :eventId AND r.status = ru.practicum.ewm.main.model.RequestStatus.CONFIRMED")
-    Integer countConfirmedRequestsByEventId(@Param("eventId") Integer eventId);
+    Long countConfirmedRequestsByEventId(@Param("eventId") Long eventId);
 
-    List<Event> findByInitiatorId(Integer initiatorId, Pageable pageable);
+    List<Event> findByInitiatorId(Long initiatorId, Pageable pageable);
 
-    Optional<Event> findByInitiatorIdAndId(Integer initiatorId, Integer eventId);
+    Optional<Event> findByInitiatorIdAndId(Long initiatorId, Long eventId);
 
     @Query("SELECT e FROM Event e WHERE " +
             "e.state = 'PUBLISHED' AND " +
@@ -55,11 +55,11 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "ORDER BY e.eventDate DESC")
     List<Event> findPublishedEventsWithFilters(
             @Param("text") String text,
-            @Param("categories") List<Integer> categories,
+            @Param("categories") List<Long> categories,
             @Param("paid") Boolean paid,
             @Param("rangeStart") LocalDateTime rangeStart,
             @Param("rangeEnd") LocalDateTime rangeEnd,
             Pageable pageable);
 
-    Optional<Event> findByIdAndState(Integer id, EventState state);
+    Optional<Event> findByIdAndState(Long id, EventState state);
 }

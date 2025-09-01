@@ -17,7 +17,7 @@ import java.util.List;
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     private String title;
     private Boolean pinned;
     @ManyToMany(fetch = FetchType.LAZY)

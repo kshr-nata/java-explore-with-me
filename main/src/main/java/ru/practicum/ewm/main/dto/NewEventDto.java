@@ -2,22 +2,21 @@ package ru.practicum.ewm.main.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.ewm.main.model.Location;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NewEventDto {
     @NotBlank(message = "Поле annotation не может быть пустым")
     @Size(min = 20, max = 2000, message = "Поле annotation должно быть от 20 до 2000 символов")
     private String annotation;
     @NotNull(message = "Поле category не может быть пустым")
-    private Integer category;
+    private Long category;
     @NotBlank(message = "Поле description не может быть пустым")
     @Size(min = 20, max = 7000, message = "Поле description должно быть от 20 до 7000 символов")
     private String description;
@@ -31,7 +30,7 @@ public class NewEventDto {
     private Boolean paid = false;
     @Builder.Default
     @PositiveOrZero(message = "Лимит участников должен быть положительным числом или нулём")
-    private Integer participantLimit = 0;
+    private Long participantLimit = 0L;
     @Builder.Default
     private Boolean requestModeration = true;
     @NotBlank(message = "Поле title не может быть пустым")

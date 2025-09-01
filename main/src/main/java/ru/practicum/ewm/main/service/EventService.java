@@ -49,8 +49,8 @@ public class EventService {
         this.requestRepository = requestRepository;
     }
 
-    public List<EventFullDto> searchEventsByAdmin(List<Integer> users, List<EventState> states,
-                                                  List<Integer> categories, LocalDateTime rangeStart,
+    public List<EventFullDto> searchEventsByAdmin(List<Long> users, List<EventState> states,
+                                                  List<Long> categories, LocalDateTime rangeStart,
                                                   LocalDateTime rangeEnd, Integer from, Integer size) {
 
         Pageable pageable = PageRequest.of(from / size, size);
@@ -61,17 +61,17 @@ public class EventService {
 
         // Заполняем confirmedRequests для каждого события
         events.forEach(event -> {
-            Integer confirmedRequests = eventRepository.countConfirmedRequestsByEventId(event.getId());
-            event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests.intValue() : 0);
+            Long confirmedRequests = eventRepository.countConfirmedRequestsByEventId(event.getId());
+            event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests.longValue() : 0);
         });
 
         // Получаем статистику просмотров
-        Map<Integer, Integer> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
 
         // Обновляем views в событиях
         events.forEach(event -> {
-            Integer eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.intValue() : 0);
+            Long eventViews = views.get(event.getId());
+            event.setViews(eventViews != null ? eventViews.longValue() : 0);
         });
 
         // Преобразуем в DTO
@@ -80,7 +80,7 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public EventFullDto updateEventByAdmin(Integer eventId, UpdateEventAdminRequest updateRequest) {
+    public EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest updateRequest) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
 
@@ -122,7 +122,7 @@ public class EventService {
         return EventMapper.mapToEventFullDto(updatedEvent);
     }
 
-    public List<EventShortDto> getUserEvents(Integer userId, Integer from, Integer size) {
+    public List<EventShortDto> getUserEvents(Long userId, Integer from, Integer size) {
         Pageable pageable = PageRequest.of(from / size, size);
 
         // 1. Получаем события пользователя
@@ -133,13 +133,13 @@ public class EventService {
         }
 
         // 3. Получаем views из статистического сервиса
-        Map<Integer, Integer> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-            Integer eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.intValue() : 0);
+            Long eventViews = views.get(event.getId());
+            event.setViews(eventViews != null ? eventViews.longValue() : 0);
         });
 
         // 5. Преобразуем в DTO
@@ -148,7 +148,7 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public EventFullDto getEventByUserAndId(Integer userId, Integer eventId) {
+    public EventFullDto getEventByUserAndId(Long userId, Long eventId) {
         // 1. Получаем событие пользователя
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new NotFoundException(
@@ -158,20 +158,20 @@ public class EventService {
         List<Event> events = List.of(event);
 
         // Получаем views через существующий метод
-        Map<Integer, Integer> views = getViewsForEvents(events.stream()
+        Map<Long, Long> views = getViewsForEvents(events.stream()
                 .map(Event::getId)
                 .collect(Collectors.toList()));
 
         // 3. Заполняем transient поля
         event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-        Integer eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.intValue() : 0);
+        Long eventViews = views.get(event.getId());
+        event.setViews(eventViews != null ? eventViews.longValue() : 0);
 
         // 4. Преобразуем в DTO
         return EventMapper.mapToEventFullDto(event);
     }
 
-    public EventFullDto createEvent(Integer userId, NewEventDto newEventDto) {
+    public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
         // 1. Проверяем существование пользователя
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -202,13 +202,13 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
 
         // 5. Заполняем дополнительные поля
-        savedEvent.setViews(0);
-        savedEvent.setConfirmedRequests(0);
+        savedEvent.setViews(0L);
+        savedEvent.setConfirmedRequests(0L);
 
         return EventMapper.mapToEventFullDto(savedEvent);
     }
 
-    public EventFullDto updateEventByUser(Integer userId, Integer eventId, UpdateEventUserRequest updateRequest) {
+    public EventFullDto updateEventByUser(Long userId, Long eventId, UpdateEventUserRequest updateRequest) {
         // 1. Находим событие
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new NotFoundException(
@@ -226,18 +226,18 @@ public class EventService {
         // 5. Получаем статистику и возвращаем DTO
         List<Event> events = List.of(event);
 
-        Map<Integer, Integer> views = getViewsForEvents(events.stream()
+        Map<Long, Long> views = getViewsForEvents(events.stream()
                 .map(Event::getId)
                 .collect(Collectors.toList()));
 
         event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-        Integer eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.intValue() : 0);
+        Long eventViews = views.get(event.getId());
+        event.setViews(eventViews != null ? eventViews.longValue() : 0);
 
         return EventMapper.mapToEventFullDto(event);
     }
 
-    public List<EventShortDto> getPublicEvents(String text, List<Integer> categories, Boolean paid,
+    public List<EventShortDto> getPublicEvents(String text, List<Long> categories, Boolean paid,
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, Integer from,
                                                Integer size, HttpServletRequest request) {
@@ -260,15 +260,15 @@ public class EventService {
         saveStats(request);
 
         // 3. Получаем статистику
-        Map<Integer, Integer> views = getViewsForEvents(events.stream()
+        Map<Long, Long> views = getViewsForEvents(events.stream()
                 .map(Event::getId)
                 .collect(Collectors.toList()));
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
-            Integer eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.intValue() : 0);
+            Long eventViews = views.get(event.getId());
+            event.setViews(eventViews != null ? eventViews.longValue() : 0);
         });
 
         // 5. Фильтруем по доступности
@@ -281,7 +281,7 @@ public class EventService {
 
         // 6. Сортируем
         if ("VIEWS".equals(sort)) {
-            filteredEvents.sort(Comparator.comparingInt(Event::getViews).reversed());
+            filteredEvents.sort(Comparator.comparingLong(Event::getViews).reversed());
         } else if ("EVENT_DATE".equals(sort)) {
             filteredEvents.sort(Comparator.comparing(Event::getEventDate));
         }
@@ -293,7 +293,7 @@ public class EventService {
     }
 
 
-    public EventFullDto getPublishedEventById(Integer eventId, HttpServletRequest request) {
+    public EventFullDto getPublishedEventById(Long eventId, HttpServletRequest request) {
         // 1. Находим опубликованное событие
         Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено или не опубликовано"));
@@ -301,17 +301,17 @@ public class EventService {
         saveStats(request);
 
         // 2. Получаем количество подтвержденных заявок
-        Integer confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
+        Long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         event.setConfirmedRequests(confirmedRequests);
 
         // 3. Получаем количество просмотров
         // Получаем views через существующий метод
         List<Event> events = List.of(event);
-        Map<Integer, Integer> views = getViewsForEvents(events.stream()
+        Map<Long, Long> views = getViewsForEvents(events.stream()
                 .map(Event::getId)
                 .collect(Collectors.toList()));
-        Integer eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.intValue() : 0);
+        Long eventViews = views.get(event.getId());
+        event.setViews(eventViews != null ? eventViews.longValue() : 0);
 
         // 4. Преобразуем в DTO
         return EventMapper.mapToEventFullDto(event);
@@ -345,9 +345,9 @@ public class EventService {
     }
 
     private void setViewsFromStats(Event event) {
-        Map<Integer, Integer> views = getViewsForEvents(List.of(event.getId()));
-        Integer eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.intValue() : 0);
+        Map<Long, Long> views = getViewsForEvents(List.of(event.getId()));
+        Long eventViews = views.get(event.getId());
+        event.setViews(eventViews != null ? eventViews : 0);
     }
 
     private void saveStats(HttpServletRequest userRequest) {
@@ -361,11 +361,11 @@ public class EventService {
     }
 
     private void setConfirmedRequests(Event event) {
-        Integer confirmedRequests = eventRepository.countConfirmedRequestsByEventId(event.getId());
-        event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests.intValue() : 0);
+        Long confirmedRequests = eventRepository.countConfirmedRequestsByEventId(event.getId());
+        event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests : 0);
     }
 
-    private Map<Integer, Integer> getViewsForEvents(List<Integer> eventIds) {
+    private Map<Long, Long> getViewsForEvents(List<Long> eventIds) {
         // Создаем URI для событий в формате /events/{id}
         List<String> uris = eventIds.stream()
                 .map(id -> "/events/" + id)
@@ -390,10 +390,10 @@ public class EventService {
                 ));
     }
 
-    private Integer extractEventIdFromUri(String uri) {
+    private Long extractEventIdFromUri(String uri) {
         try {
             String[] parts = uri.split("/");
-            return Integer.parseInt(parts[parts.length - 1]);
+            return Long.parseLong(parts[parts.length - 1]);
         } catch (Exception e) {
             return null;
         }

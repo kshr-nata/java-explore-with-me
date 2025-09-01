@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    Long id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;
     @ManyToOne(fetch = FetchType.LAZY)

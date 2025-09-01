@@ -13,6 +13,6 @@ public class NewCompilationDto {
     @NotBlank(message = "must not be blank")
     @Size(min = 1, max = 50, message = "Количество символов в поле title от 1 до 50")
     private String title;
-    private List<Integer> events;
+    private List<Long> events;
     private Boolean pinned;
 }

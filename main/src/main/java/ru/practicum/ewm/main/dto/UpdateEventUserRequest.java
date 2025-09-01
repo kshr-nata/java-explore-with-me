@@ -22,11 +22,11 @@ public class UpdateEventUserRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Future(message = "Дата события должна быть в будущем")
     private LocalDateTime eventDate;
-    private Integer category;
+    private Long category;
     private Location location;
     private Boolean paid;
     @PositiveOrZero(message = "Лимит участников должен быть положительным числом или нулём")
-    private Integer participantLimit;
+    private Long participantLimit;
     private Boolean requestModeration;
     private EventStateAction stateAction;
     @Size(min = 3, max = 120, message = "Количество символов в поле title от 20 до 2000")
