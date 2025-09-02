@@ -14,6 +14,7 @@ import ru.practicum.ewm.dto.stats.ViewStatsRequest;
 import ru.practicum.ewm.main.dto.*;
 import ru.practicum.ewm.main.exception.ConflictException;
 import ru.practicum.ewm.main.exception.NotFoundException;
+import ru.practicum.ewm.main.exception.BadRequestException;
 import ru.practicum.ewm.main.mapper.EventMapper;
 import ru.practicum.ewm.main.model.Event;
 import ru.practicum.ewm.main.model.EventState;
@@ -247,6 +248,10 @@ public class EventService {
                                                LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                Boolean onlyAvailable, String sort, Integer from,
                                                Integer size, HttpServletRequest request) {
+
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new BadRequestException("Начало должно быть до окончания");
+        }
 
         // 1. Устанавливаем диапазон дат по умолчанию
         LocalDateTime actualRangeStart = rangeStart;
