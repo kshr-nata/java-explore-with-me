@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import ru.practicum.ewm.main.model.EventStateAction;
 import ru.practicum.ewm.main.model.Location;
+import ru.practicum.ewm.main.model.UserStateAction;
 
 import java.time.LocalDateTime;
 
@@ -26,9 +26,9 @@ public class UpdateEventUserRequest {
     private Location location;
     private Boolean paid;
     @PositiveOrZero(message = "Лимит участников должен быть положительным числом или нулём")
-    private Long participantLimit;
+    private Integer participantLimit;
     private Boolean requestModeration;
-    private EventStateAction stateAction;
+    private UserStateAction stateAction;
     @Size(min = 3, max = 120, message = "Количество символов в поле title от 20 до 2000")
     private String title;
 }

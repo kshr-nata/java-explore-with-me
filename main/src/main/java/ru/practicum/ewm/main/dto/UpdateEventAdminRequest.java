@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
-import ru.practicum.ewm.main.model.EventStateAction;
+import ru.practicum.ewm.main.model.AdminStateAction;
 import ru.practicum.ewm.main.model.Location;
 
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class UpdateEventAdminRequest {
     @PositiveOrZero(message = "Лимит участников должен быть положительным числом или нулём")
     private Long participantLimit;
     private Boolean requestModeration;
-    private EventStateAction stateAction;
+    private AdminStateAction stateAction;
     @Size(min = 3, max = 120, message = "Количество символов в поле title от 20 до 2000")
     private String title;
 }

@@ -59,6 +59,9 @@ public class EventService {
         List<Event> events = eventRepository.findEventsByAdminFilters(
                 users, states, categories, rangeStart, rangeEnd, pageable);
 
+        if (events.isEmpty()) {
+            return List.of();
+        }
         // Заполняем confirmedRequests для каждого события
         events.forEach(event -> {
             Long confirmedRequests = eventRepository.countConfirmedRequestsByEventId(event.getId());

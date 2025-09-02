@@ -7,7 +7,9 @@ import ru.practicum.ewm.main.dto.EventShortDto;
 import ru.practicum.ewm.main.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.main.dto.UpdateEventUserRequest;
 import ru.practicum.ewm.main.model.Event;
+import ru.practicum.ewm.main.model.EventState;
 import ru.practicum.ewm.main.model.Location;
+import ru.practicum.ewm.main.model.UserStateAction;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventMapper {
@@ -169,6 +171,13 @@ public final class EventMapper {
         }
         if (updateRequest.getRequestModeration() != null) {
             event.setRequestModeration(updateRequest.getRequestModeration());
+        }
+        if (updateRequest.getStateAction() != null) {
+            if (updateRequest.getStateAction().equals(UserStateAction.SEND_TO_REVIEW)) {
+                event.setState(EventState.PENDING);
+            } else {
+                event.setState(EventState.CANCELED);
+            }
         }
     }
 

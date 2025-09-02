@@ -27,8 +27,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
             "AND (:states IS NULL OR e.state IN :states) " +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
-            "AND (:rangeStart IS NULL OR e.eventDate >= :rangeStart) " +
-            "AND (:rangeEnd IS NULL OR e.eventDate <= :rangeEnd)")
+            "AND (COALESCE(:rangeStart, NULL) IS NULL OR e.eventDate >= :rangeStart) " +
+            "AND (COALESCE(:rangeEnd, NULL) IS NULL OR e.eventDate <= :rangeEnd)")
     List<Event> findEventsByAdminFilters(
             @Param("users") List<Long> users,
             @Param("states") List<EventState> states,
@@ -45,14 +45,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     Optional<Event> findByInitiatorIdAndId(Long initiatorId, Long eventId);
 
-    @Query("SELECT e FROM Event e WHERE " +
-            "e.state = 'PUBLISHED' AND " +
-            "(:text IS NULL OR LOWER(e.annotation) LIKE LOWER(CONCAT('%', :text, '%')) OR LOWER(e.description) LIKE LOWER(CONCAT('%', :text, '%'))) AND " +
-            "(:categories IS NULL OR e.category.id IN :categories) AND " +
-            "(:paid IS NULL OR e.paid = :paid) AND " +
-            "(:rangeStart IS NULL OR e.eventDate >= :rangeStart) AND " +
-            "(:rangeEnd IS NULL OR e.eventDate <= :rangeEnd) " +
-            "ORDER BY e.eventDate DESC")
+    @Query("SELECT e FROM Event e " +
+            "WHERE e.state = 'PUBLISHED' " +
+            "AND (:text IS NULL OR " +
+            "LOWER(e.annotation) LIKE '%' || LOWER(CAST(:text AS string)) || '%' OR " +
+            "LOWER(e.description) LIKE '%' || LOWER(CAST(:text AS string)) || '%') " +
+            "AND (COALESCE(:categories, NULL) IS NULL OR e.category.id IN :categories) " +
+            "AND (COALESCE(:paid, NULL) IS NULL OR e.paid = :paid) " +
+            "AND (COALESCE(:rangeStart, NULL) IS NULL OR e.eventDate >= :rangeStart) " +
+            "AND (COALESCE(:rangeEnd, NULL) IS NULL OR e.eventDate <= :rangeEnd) ")
     List<Event> findPublishedEventsWithFilters(
             @Param("text") String text,
             @Param("categories") List<Long> categories,
