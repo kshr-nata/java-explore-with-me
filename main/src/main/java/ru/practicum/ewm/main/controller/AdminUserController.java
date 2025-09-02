@@ -2,7 +2,9 @@ package ru.practicum.ewm.main.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.main.dto.NewUserRequest;
 import ru.practicum.ewm.main.model.User;
 import ru.practicum.ewm.main.service.UserService;
 
@@ -20,7 +22,8 @@ public class AdminUserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody @Valid User user) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public User createUser(@RequestBody @Valid NewUserRequest user) {
         return userService.createUser(user);
     }
 

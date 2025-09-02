@@ -1,5 +1,6 @@
 package ru.practicum.ewm.main.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,7 @@ public class AdminEventController {
     @PatchMapping("{eventId}")
     public EventFullDto updateEventByAdmin(
             @PathVariable Long eventId,
-            @RequestBody UpdateEventAdminRequest updateRequest) {
+            @RequestBody @Valid UpdateEventAdminRequest updateRequest) {
 
         return eventService.updateEventByAdmin(eventId, updateRequest);
     }

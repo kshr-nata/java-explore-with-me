@@ -11,10 +11,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class NewUserRequest {
-    @NotBlank
-    @Email
+    @NotBlank(message = "Поле email не может быть пустым")
+    @Size(min = 6, max = 254, message = "Поле email должно быть от 6 до 254 символов")
+    @Email(message = "Неверный email")
     private String email;
-    @NotBlank
-    @Size(min = 2, max = 255)
+    @NotBlank(message = "Поле name не может быть пустым")
+    @Size(min = 2, max = 250, message = "Поле name должно быть от 2 до 250 символов")
     private String name;
 }

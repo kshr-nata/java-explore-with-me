@@ -87,10 +87,12 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
 
-        if (event.getEventDate().isBefore(LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Event date cannot be in the past");
+        if (updateRequest.getEventDate() != null && event.getPublishedOn() != null) {
+            if (updateRequest.getEventDate().isBefore(event.getPublishedOn().plusHours(1))) {
+                throw new ConflictException("Дата начала события должна быть не ранее чем за час от даты публикации");
+            }
         }
+
         // Обновляем поля события
         event = EventMapper.updateEventFromAdminRequest(event, updateRequest);
 
@@ -102,13 +104,14 @@ public class EventService {
                         throw new ResponseStatusException(HttpStatus.CONFLICT,
                                 "Cannot publish the event because it's not in the right state: " + event.getState());
                     }
+                    event.setPublishedOn(LocalDateTime.now());
+                    event.setState(EventState.PUBLISHED);
                     break;
                 case REJECT_EVENT:
                     if (event.getState() == EventState.PUBLISHED) {
                         throw new ResponseStatusException(HttpStatus.CONFLICT,
                                 "Cannot reject the event because it's already published");
                     }
-
                     event.setState(EventState.CANCELED);
                     break;
             }
