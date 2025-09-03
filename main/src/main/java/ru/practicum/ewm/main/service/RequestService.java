@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.main.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.ewm.main.dto.EventRequestStatusUpdateResult;
+import ru.practicum.ewm.main.dto.ParticipationRequestDto;
 import ru.practicum.ewm.main.exception.ConflictException;
 import ru.practicum.ewm.main.exception.NotFoundException;
+import ru.practicum.ewm.main.mapper.RequestMapper;
 import ru.practicum.ewm.main.model.*;
 import ru.practicum.ewm.main.repository.EventRepository;
 import ru.practicum.ewm.main.repository.RequestRepository;
@@ -60,17 +62,18 @@ public class RequestService {
         }
     }
 
-    public List<Request> getUserRequests(Long userId) {
+    public List<ParticipationRequestDto> getUserRequests(Long userId) {
         // Проверяем существование пользователя
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
         }
 
         // Получаем все заявки пользователя
-        return requestRepository.findByRequesterId(userId);
+        return requestRepository.findByRequesterId(userId).stream()
+                .map(RequestMapper::mapToDto).toList();
     }
 
-    public Request createRequest(Long userId, Long eventId) {
+    public ParticipationRequestDto createRequest(Long userId, Long eventId) {
         // 1. Проверяем существование пользователя
         User requester = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=" + userId + " не найден"));
@@ -111,10 +114,10 @@ public class RequestService {
                 .status(determineInitialStatus(event))
                 .build();
 
-        return requestRepository.save(request);
+        return RequestMapper.mapToDto(requestRepository.save(request));
     }
 
-    public Request cancelRequest(Long userId, Long requestId) {
+    public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         // 1. Проверяем существование пользователя
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь с id=" + userId + " не найден");
@@ -131,9 +134,7 @@ public class RequestService {
 
         // 5. Отменяем заявку
         request.setStatus(RequestStatus.CANCELED);
-        Request canceledRequest = requestRepository.save(request);
-
-        return canceledRequest;
+        return RequestMapper.mapToDto(requestRepository.save(request));
 
     }
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.main.dto.ParticipationRequestDto;
 import ru.practicum.ewm.main.model.Request;
 import ru.practicum.ewm.main.service.RequestService;
 
@@ -22,21 +23,21 @@ public class PrivateRequestController {
     }
 
     @GetMapping
-    public List<Request> getUserRequests(@PathVariable Long userId) {
+    public List<ParticipationRequestDto> getUserRequests(@PathVariable Long userId) {
         log.info("GET /users/{}/requests", userId);
         return requestService.getUserRequests(userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Request createRequest(@PathVariable Long userId,
+    public ParticipationRequestDto createRequest(@PathVariable Long userId,
                                                  @RequestParam Long eventId) {
         log.info("POST /users/{}/requests?eventId={}", userId, eventId);
         return requestService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{requestId}/cancel")
-    public Request cancelRequest(
+    public ParticipationRequestDto cancelRequest(
             @PathVariable Long userId,
             @PathVariable Long requestId) {
 
