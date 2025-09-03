@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.main.dto.ParticipationRequestDto;
-import ru.practicum.ewm.main.model.Request;
 import ru.practicum.ewm.main.service.RequestService;
 
 import java.util.List;
