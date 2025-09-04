@@ -32,13 +32,14 @@ public class RequestService {
         this.userRepository = userRepository;
     }
 
-    public List<Request> getEventRequests(Long userId, Long eventId) {
+    public List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId) {
         // 1. Проверяем, что событие существует и принадлежит пользователю
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Событие с id=%d для пользователя с id=%d не найдено", eventId, userId)));
 
-        return requestRepository.findByEventId(eventId);
+        return requestRepository.findByEventId(eventId)
+                .stream().map(RequestMapper::mapToDto).toList();
     }
 
     public EventRequestStatusUpdateResult updateRequestStatuses(Long userId, Long eventId,
@@ -49,10 +50,10 @@ public class RequestService {
                         String.format("Событие с id=%d для пользователя с id=%d не найдено", eventId, userId)));
 
         // 2. Получаем заявки для обновления
-        List<Request> requestsToUpdate = requestRepository.findAllById(updateRequest.getRequestIds());
+        List<EventRequest> requestsToUpdate = requestRepository.findAllById(updateRequest.getRequestIds());
 
         // 3. Проверяем, что все заявки принадлежат событию
-        validateRequestsBelongToEvent(requestsToUpdate, eventId);
+     //   validateRequestsBelongToEvent(requestsToUpdate, eventId);
 
         // 4. Обрабатываем в зависимости от статуса
         if (updateRequest.getStatus() == RequestStatus.CONFIRMED) {
@@ -93,7 +94,7 @@ public class RequestService {
         }
 
         // 5. Проверяем, что у пользователя нет активной заявки на это событие
-        Optional<Request> existingRequest = requestRepository.findByRequesterIdAndEventId(userId, eventId);
+        Optional<EventRequest> existingRequest = requestRepository.findByRequesterIdAndEventId(userId, eventId);
         if (existingRequest.isPresent()) {
             throw new ConflictException("Заявка на это событие уже существует");
         }
@@ -107,14 +108,14 @@ public class RequestService {
         }
 
         // 7. Создаем заявку
-        Request request = Request.builder()
+        EventRequest request = EventRequest.builder()
                 .created(LocalDateTime.now())
                 .event(event)
                 .requester(requester)
                 .status(determineInitialStatus(event))
                 .build();
-
-        return RequestMapper.mapToDto(requestRepository.save(request));
+        EventRequest savedRequest = requestRepository.save(request);
+        return RequestMapper.mapToDto(savedRequest);
     }
 
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
@@ -124,7 +125,7 @@ public class RequestService {
         }
 
         // 2. Находим заявку
-        Request request = requestRepository.findById(requestId)
+        EventRequest request = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Заявка с id=" + requestId + " не найдена"));
 
         // 3. Проверяем, что заявка принадлежит пользователю
@@ -139,18 +140,17 @@ public class RequestService {
     }
 
     private RequestStatus determineInitialStatus(Event event) {
-        // Если премодерация отключена или лимит 0 - автоматически подтверждаем
-        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+        if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
             return RequestStatus.CONFIRMED;
         }
         return RequestStatus.PENDING;
     }
 
-    private EventRequestStatusUpdateResult confirmRequests(Event event, List<Request> requestsToConfirm) {
+    private EventRequestStatusUpdateResult confirmRequests(Event event, List<EventRequest> requestsToConfirm) {
         // Проверяем, требуется ли подтверждение заявок
-        if (!isModerationRequired(event)) {
-            throw new ConflictException("Для данного события подтверждение заявок не требуется");
-        }
+//        if (!isModerationRequired(event)) {
+//            throw new ConflictException("Для данного события подтверждение заявок не требуется");
+//        }
 
         // Проверяем, не достигнут ли лимит
         long confirmedCount = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
@@ -166,10 +166,10 @@ public class RequestService {
                             availableSlots, requestsToConfirm.size()));
         }
 
-        List<Request> confirmedRequests = new ArrayList<>();
-        List<Request> rejectedRequests = new ArrayList<>();
+        List<EventRequest> confirmedRequests = new ArrayList<>();
+        List<EventRequest> rejectedRequests = new ArrayList<>();
 
-        for (Request request : requestsToConfirm) {
+        for (EventRequest request : requestsToConfirm) {
             // Проверяем, что заявка в состоянии ожидания
             if (request.getStatus() != RequestStatus.PENDING) {
                 throw new ConflictException(
@@ -198,8 +198,8 @@ public class RequestService {
         );
     }
 
-    private EventRequestStatusUpdateResult rejectRequests(List<Request> requestsToReject) {
-        for (Request request : requestsToReject) {
+    private EventRequestStatusUpdateResult rejectRequests(List<EventRequest> requestsToReject) {
+        for (EventRequest request : requestsToReject) {
             if (request.getStatus() != RequestStatus.PENDING) {
                 throw new ConflictException(
                         String.format("Заявка с id=%d не в состоянии ожидания", request.getId()));
@@ -222,8 +222,8 @@ public class RequestService {
         return event.getParticipantLimit() != 0 && event.getRequestModeration();
     }
 
-    private void validateRequestsBelongToEvent(List<Request> requests, Long eventId) {
-        for (Request request : requests) {
+    private void validateRequestsBelongToEvent(List<EventRequest> requests, Long eventId) {
+        for (EventRequest request : requests) {
             if (!request.getEvent().getId().equals(eventId)) {
                 throw new ConflictException(
                         String.format("Заявка с id=%d не принадлежит событию с id=%d", request.getId(), eventId));
@@ -232,8 +232,8 @@ public class RequestService {
     }
 
     private void rejectPendingRequests(Long eventId) {
-        List<Request> pendingRequests = requestRepository.findByEventIdAndStatus(eventId, RequestStatus.PENDING);
-        for (Request request : pendingRequests) {
+        List<EventRequest> pendingRequests = requestRepository.findByEventIdAndStatus(eventId, RequestStatus.PENDING);
+        for (EventRequest request : pendingRequests) {
             request.setStatus(RequestStatus.REJECTED);
         }
         requestRepository.saveAll(pendingRequests);

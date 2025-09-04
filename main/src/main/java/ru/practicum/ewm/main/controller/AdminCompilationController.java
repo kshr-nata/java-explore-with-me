@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.main.dto.CompilationDto;
 import ru.practicum.ewm.main.dto.NewCompilationDto;
+import ru.practicum.ewm.main.dto.UpdateCompilationRequestDto;
 import ru.practicum.ewm.main.service.CompilationService;
 
 @Slf4j
@@ -38,7 +39,7 @@ public class AdminCompilationController {
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(
             @PathVariable Long compId,
-            @RequestBody @Valid NewCompilationDto updateRequest) {
+            @RequestBody @Valid UpdateCompilationRequestDto updateRequest) {
 
         log.info("PATCH /admin/compilations/{} with body: {}", compId, updateRequest);
         return compilationService.updateCompilation(compId, updateRequest);

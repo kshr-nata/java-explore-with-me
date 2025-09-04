@@ -28,6 +28,10 @@ public class CategoryService {
     }
 
     public Category create(NewCategoryDto newCategoryDto) {
+        if (categoryRepository.existsByNameIgnoreCase(newCategoryDto.getName())) {
+            throw new ConflictException(String.format("Category with name=%s is already exist",
+                    newCategoryDto.getName()));
+        }
         return categoryRepository.save(CategoryMapper.mapToCategory(newCategoryDto));
     }
 
@@ -45,6 +49,11 @@ public class CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow(()
                 -> new NotFoundException(String.format("Category with id=%d was not found",
                 id)));
+        if (!category.getName().equals(newCategoryDto.getName()) &&
+                categoryRepository.existsByNameIgnoreCase(newCategoryDto.getName())) {
+            throw new ConflictException(String.format("Category with name=%s is already exist",
+                    newCategoryDto.getName()));
+        }
         category.setName(newCategoryDto.getName());
         return categoryRepository.save(category);
     }

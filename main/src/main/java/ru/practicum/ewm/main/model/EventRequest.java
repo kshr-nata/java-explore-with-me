@@ -14,16 +14,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Request {
+public class EventRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime created;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     Event event;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "requester_id", nullable = false)
     User requester;
     @Enumerated(EnumType.STRING)

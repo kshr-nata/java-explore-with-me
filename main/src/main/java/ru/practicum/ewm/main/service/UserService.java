@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.main.dto.NewUserRequest;
+import ru.practicum.ewm.main.exception.ConflictException;
 import ru.practicum.ewm.main.exception.NotFoundException;
 import ru.practicum.ewm.main.model.User;
 import ru.practicum.ewm.main.repository.UserRepository;
@@ -21,6 +22,9 @@ public class UserService {
     }
 
     public User createUser(NewUserRequest request) {
+        if(userRepository.existsByEmailIgnoreCase(request.getEmail())) {
+            throw  new ConflictException("User with email " + request.getEmail() + " already exist");
+        }
             User user = new User();
             user.setEmail(request.getEmail());
             user.setName(request.getName());

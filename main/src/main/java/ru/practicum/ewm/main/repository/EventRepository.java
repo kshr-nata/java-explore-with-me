@@ -37,7 +37,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("rangeEnd") LocalDateTime rangeEnd,
             Pageable pageable);
 
-    @Query("SELECT COUNT(r) FROM Request r " +
+    @Query("SELECT COUNT(r) FROM EventRequest r " +
             "WHERE r.event.id = :eventId AND r.status = ru.practicum.ewm.main.model.RequestStatus.CONFIRMED")
     Long countConfirmedRequestsByEventId(@Param("eventId") Long eventId);
 

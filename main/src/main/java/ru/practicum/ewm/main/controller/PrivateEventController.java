@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.main.dto.*;
-import ru.practicum.ewm.main.model.Request;
 import ru.practicum.ewm.main.service.EventService;
 import ru.practicum.ewm.main.service.RequestService;
 
@@ -60,7 +59,7 @@ public class PrivateEventController {
     }
 
     @GetMapping("{eventId}/requests")
-    public List<Request> getEventRequests(
+    public List<ParticipationRequestDto> getEventRequests(
             @PathVariable long userId,
             @PathVariable long eventId) {
 
@@ -71,7 +70,7 @@ public class PrivateEventController {
     public EventRequestStatusUpdateResult updateRequestStatuses(
             @PathVariable long userId,
             @PathVariable long eventId,
-            @RequestBody EventRequestStatusUpdateRequest updateRequest) {
+            @RequestBody @Valid EventRequestStatusUpdateRequest updateRequest) {
 
         return requestService.updateRequestStatuses(userId, eventId, updateRequest);
     }

@@ -10,6 +10,7 @@ import ru.practicum.ewm.dto.stats.ViewStats;
 import ru.practicum.ewm.dto.stats.ViewStatsRequest;
 import ru.practicum.ewm.main.dto.CompilationDto;
 import ru.practicum.ewm.main.dto.EventShortDto;
+import ru.practicum.ewm.main.dto.UpdateCompilationRequestDto;
 import ru.practicum.ewm.main.exception.NotFoundException;
 import ru.practicum.ewm.main.mapper.CompilationMapper;
 import ru.practicum.ewm.main.mapper.EventMapper;
@@ -155,7 +156,7 @@ public class CompilationService {
         log.info("Подборка с id={} успешно удалена", compId);
     }
 
-    public CompilationDto updateCompilation(Long compId, NewCompilationDto updateRequest) {
+    public CompilationDto updateCompilation(Long compId, UpdateCompilationRequestDto updateRequest) {
         // 1. Находим подборку
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Подборка с id=" + compId + " не найдена"));
