@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public User createUser(NewUserRequest request) {
-        if(userRepository.existsByEmailIgnoreCase(request.getEmail())) {
+        if (userRepository.existsByEmailIgnoreCase(request.getEmail())) {
             throw  new ConflictException("User with email " + request.getEmail() + " already exist");
         }
             User user = new User();
