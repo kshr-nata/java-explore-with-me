@@ -26,9 +26,7 @@ import ru.practicum.ewm.main.repository.RequestRepository;
 import ru.practicum.ewm.main.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -66,16 +64,16 @@ public class EventService {
         // Заполняем confirmedRequests для каждого события
         events.forEach(event -> {
             Long confirmedRequests = eventRepository.countConfirmedRequestsByEventId(event.getId());
-            event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests.longValue() : 0);
+            event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests : 0);
         });
 
         // Получаем статистику просмотров
-        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events);
 
         // Обновляем views в событиях
         events.forEach(event -> {
             Long eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.longValue() : 0);
+            event.setViews(eventViews != null ? eventViews : 0);
         });
 
         // Преобразуем в DTO
@@ -140,13 +138,13 @@ public class EventService {
         }
 
         // 3. Получаем views из статистического сервиса
-        Map<Long, Long> views = getViewsForEvents(events.stream().map(Event::getId).toList());
+        Map<Long, Long> views = getViewsForEvents(events);
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
             Long eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.longValue() : 0);
+            event.setViews(eventViews != null ? eventViews : 0);
         });
 
         // 5. Преобразуем в DTO
@@ -165,14 +163,12 @@ public class EventService {
         List<Event> events = List.of(event);
 
         // Получаем views через существующий метод
-        Map<Long, Long> views = getViewsForEvents(events.stream()
-                .map(Event::getId)
-                .collect(Collectors.toList()));
+        Map<Long, Long> views = getViewsForEvents(events);
 
         // 3. Заполняем transient поля
         event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
         Long eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.longValue() : 0);
+        event.setViews(eventViews != null ? eventViews : 0);
 
         // 4. Преобразуем в DTO
         return EventMapper.mapToEventFullDto(event);
@@ -231,15 +227,13 @@ public class EventService {
         Event updatedEvent = eventRepository.save(event);
 
         // 5. Получаем статистику и возвращаем DTO
-        List<Event> events = List.of(event);
+        List<Event> events = List.of(updatedEvent);
 
-        Map<Long, Long> views = getViewsForEvents(events.stream()
-                .map(Event::getId)
-                .collect(Collectors.toList()));
+        Map<Long, Long> views = getViewsForEvents(events);
 
         event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
         Long eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.longValue() : 0);
+        event.setViews(eventViews != null ? eventViews : 0);
 
         return EventMapper.mapToEventFullDto(event);
     }
@@ -271,15 +265,13 @@ public class EventService {
         saveStats(request);
 
         // 3. Получаем статистику
-        Map<Long, Long> views = getViewsForEvents(events.stream()
-                .map(Event::getId)
-                .collect(Collectors.toList()));
+        Map<Long, Long> views = getViewsForEvents(events);
 
         // 4. Заполняем transient поля
         events.forEach(event -> {
             event.setConfirmedRequests(eventRepository.countConfirmedRequestsByEventId(event.getId()));
             Long eventViews = views.get(event.getId());
-            event.setViews(eventViews != null ? eventViews.longValue() : 0);
+            event.setViews(eventViews != null ? eventViews : 0);
         });
 
         // 5. Фильтруем по доступности
@@ -318,11 +310,9 @@ public class EventService {
         // 3. Получаем количество просмотров
         // Получаем views через существующий метод
         List<Event> events = List.of(event);
-        Map<Long, Long> views = getViewsForEvents(events.stream()
-                .map(Event::getId)
-                .collect(Collectors.toList()));
+        Map<Long, Long> views = getViewsForEvents(events);
         Long eventViews = views.get(event.getId());
-        event.setViews(eventViews != null ? eventViews.longValue() : 0);
+        event.setViews(eventViews != null ? eventViews : 0);
 
         // 4. Преобразуем в DTO
         return EventMapper.mapToEventFullDto(event);
@@ -356,7 +346,7 @@ public class EventService {
     }
 
     private void setViewsFromStats(Event event) {
-        Map<Long, Long> views = getViewsForEvents(List.of(event.getId()));
+        Map<Long, Long> views = getViewsForEvents(List.of(event));
         Long eventViews = views.get(event.getId());
         event.setViews(eventViews != null ? eventViews : 0);
     }
@@ -376,17 +366,31 @@ public class EventService {
         event.setConfirmedRequests(confirmedRequests != null ? confirmedRequests : 0);
     }
 
-    private Map<Long, Long> getViewsForEvents(List<Long> eventIds) {
+    private Map<Long, Long> getViewsForEvents(List<Event> events) {
         // Создаем URI для событий в формате /events/{id}
-        List<String> uris = eventIds.stream()
-                .map(id -> "/events/" + id)
+        List<String> uris = events.stream()
+                .map(event -> "/events/" + event.getId())
                 .collect(Collectors.toList());
+
+        LocalDateTime earliestPublishedDate = events.stream()
+                .map(Event::getPublishedOn)
+                .filter(Objects::nonNull)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
+                .toList();
+
+        if (eventIds.isEmpty() || earliestPublishedDate == null) {
+            return new HashMap<>();
+        }
 
         // Запрашиваем статистику
         ViewStatsRequest statsRequest = ViewStatsRequest.builder()
                 .app("ewm-main-service") // ваше название приложения
-                .start(LocalDateTime.now().minusYears(1)) // за последний год
-                .end(LocalDateTime.now())
+                .start(LocalDateTime.now()) // за последний год
+                .end(earliestPublishedDate)
                 .uris(uris)
                 .unique(false) // все просмотры, а не уникальные
                 .build();

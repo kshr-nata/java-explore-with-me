@@ -198,31 +198,6 @@ public class CompilationService {
         return CompilationMapper.mapToCompilationDto(updatedCompilation, eventDtos);
     }
 
-    private CompilationDto addStats(CompilationDto compilationDto) {
-        if (compilationDto.getEvents() != null && !compilationDto.getEvents().isEmpty()) {
-            LocalDateTime earliestPublishedDate = compilationDto.getEvents().stream()
-                    .map(EventShortDto::getPublishedOn)
-                    .filter(Objects::nonNull)
-                    .min(LocalDateTime::compareTo)
-                    .orElse(null);
-
-            List<String> uris = compilationDto.getEvents().stream()
-                    .map(event -> "/events/" + event.getId())
-                    .collect(Collectors.toList());
-            List<Long> eventIds = compilationDto.getEvents().stream()
-                    .map(EventShortDto::getId)
-                    .collect(Collectors.toList());
-            Map<Long, Long> viewsMap = new HashMap<>();
-            if (earliestPublishedDate != null) {
-                viewsMap = getViewsForEvents(eventIds);
-            }
-            for (EventShortDto eventDto : compilationDto.getEvents()) {
-                eventDto.setViews(viewsMap.getOrDefault(eventDto.getId(), 0L));
-            }
-        }
-        return compilationDto;
-    }
-
     private Map<Long, Long> getViewsForEvents(List<Long> eventIds) {
         // Создаем URI для событий в формате /events/{id}
         List<String> uris = eventIds.stream()
