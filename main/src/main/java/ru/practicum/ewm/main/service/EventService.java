@@ -389,8 +389,8 @@ public class EventService {
         // Запрашиваем статистику
         ViewStatsRequest statsRequest = ViewStatsRequest.builder()
                 .app("ewm-main-service") // ваше название приложения
-                .start(LocalDateTime.now()) // за последний год
-                .end(earliestPublishedDate)
+                .start(earliestPublishedDate) // за последний год
+                .end(LocalDateTime.now())
                 .uris(uris)
                 .unique(false) // все просмотры, а не уникальные
                 .build();
