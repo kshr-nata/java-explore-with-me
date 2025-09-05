@@ -193,8 +193,8 @@ public class RequestService {
         requestRepository.saveAll(requestsToConfirm);
 
         return new EventRequestStatusUpdateResult(
-                confirmedRequests,
-                rejectedRequests
+                confirmedRequests.stream().map(RequestMapper::mapToDto).toList(),
+                rejectedRequests.stream().map(RequestMapper::mapToDto).toList()
         );
     }
 
@@ -211,7 +211,7 @@ public class RequestService {
 
         return new EventRequestStatusUpdateResult(
                 List.of(),
-                requestsToReject
+                requestsToReject.stream().map(RequestMapper::mapToDto).toList()
         );
     }
 
