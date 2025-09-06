@@ -303,6 +303,13 @@ public class EventService {
 
         saveStats(request);
 
+        // Даем время на обновление статистики
+        try {
+            Thread.sleep(100); // небольшая задержка
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         // 2. Получаем количество подтвержденных заявок
         Long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         event.setConfirmedRequests(confirmedRequests);
@@ -390,9 +397,9 @@ public class EventService {
         ViewStatsRequest statsRequest = ViewStatsRequest.builder()
                 .app("ewm-main-service") // ваше название приложения
                 .start(LocalDateTime.now().minusYears(1)) // за последний год
-                .end(LocalDateTime.now().plusSeconds(1))
+                .end(LocalDateTime.now())
                 .uris(uris)
-                .unique(true) // все просмотры, а не уникальные
+                .unique(false) // все просмотры, а не уникальные
                 .build();
 
         List<ViewStats> stats = statsClient.getStats(statsRequest);
