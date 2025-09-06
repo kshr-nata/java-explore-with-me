@@ -31,7 +31,7 @@ public class StatsService {
     public List<ViewStats> getStats(String start, String end, List<String> uris, Boolean unique) {
         LocalDateTime startDate = LocalDateTime.parse(start, dtf);
         LocalDateTime endDate = LocalDateTime.parse(end, dtf);
-        if (!startDate.isBefore(endDate)) {
+        if (startDate.isAfter(endDate)) {
             throw new BadRequestException("Start date must be before end date");
         }
         if (unique) {
