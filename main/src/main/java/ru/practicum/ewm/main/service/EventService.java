@@ -392,7 +392,7 @@ public class EventService {
                 .start(LocalDateTime.now().minusYears(1)) // за последний год
                 .end(LocalDateTime.now().plusSeconds(1))
                 .uris(uris)
-                .unique(false) // все просмотры, а не уникальные
+                .unique(true) // все просмотры, а не уникальные
                 .build();
 
         List<ViewStats> stats = statsClient.getStats(statsRequest);
