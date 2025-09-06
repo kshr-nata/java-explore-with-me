@@ -303,13 +303,6 @@ public class EventService {
 
         saveStats(request);
 
-        // Даем время на обновление статистики
-        try {
-            Thread.sleep(1000); // небольшая задержка
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
         // 2. Получаем количество подтвержденных заявок
         Long confirmedRequests = requestRepository.countByEventIdAndStatus(eventId, RequestStatus.CONFIRMED);
         event.setConfirmedRequests(confirmedRequests);
