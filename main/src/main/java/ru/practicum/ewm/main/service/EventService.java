@@ -382,9 +382,9 @@ public class EventService {
                 .map(Event::getId)
                 .toList();
 
-//        if (eventIds.isEmpty() || earliestPublishedDate == null) {
-//            return new HashMap<>();
-//        }
+        if (eventIds.isEmpty() || earliestPublishedDate == null) {
+            return new HashMap<>();
+        }
 
         // Запрашиваем статистику
         ViewStatsRequest statsRequest = ViewStatsRequest.builder()
