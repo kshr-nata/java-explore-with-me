@@ -382,14 +382,14 @@ public class EventService {
                 .map(Event::getId)
                 .toList();
 
-//        if (eventIds.isEmpty() || earliestPublishedDate == null) {
-//            return new HashMap<>();
-//        }
+        if (eventIds.isEmpty() || earliestPublishedDate == null) {
+            return new HashMap<>();
+        }
 
         // Запрашиваем статистику
         ViewStatsRequest statsRequest = ViewStatsRequest.builder()
                 .app("ewm-main-service") // ваше название приложения
-                .start(LocalDateTime.now()) // за последний год
+                .start(earliestPublishedDate) // за последний год
                 .end(LocalDateTime.now())
                 .uris(uris)
                 .unique(false) // все просмотры, а не уникальные
