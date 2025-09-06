@@ -305,7 +305,7 @@ public class EventService {
 
         // Даем время на обновление статистики
         try {
-            Thread.sleep(100); // небольшая задержка
+            Thread.sleep(1000); // небольшая задержка
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
