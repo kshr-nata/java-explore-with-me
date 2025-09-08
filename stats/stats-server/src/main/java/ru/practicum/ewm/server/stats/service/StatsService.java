@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.stats.EndpointHit;
 import ru.practicum.ewm.dto.stats.ViewStats;
+import ru.practicum.ewm.server.stats.exception.BadRequestException;
 import ru.practicum.ewm.server.stats.repository.StatRecord;
 import ru.practicum.ewm.server.stats.repository.StatsRepository;
 
@@ -30,6 +31,9 @@ public class StatsService {
     public List<ViewStats> getStats(String start, String end, List<String> uris, Boolean unique) {
         LocalDateTime startDate = LocalDateTime.parse(start, dtf);
         LocalDateTime endDate = LocalDateTime.parse(end, dtf);
+        if (startDate.isAfter(endDate)) {
+            throw new BadRequestException("Start date must be before end date");
+        }
         if (unique) {
             return statsRepository.searchUniqueViewStatsWithUris(startDate, endDate, uris);
         } else {
