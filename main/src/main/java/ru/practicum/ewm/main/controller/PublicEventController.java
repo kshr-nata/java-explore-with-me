@@ -42,7 +42,7 @@ public class PublicEventController {
                 onlyAvailable, sort, from, size, request);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("{id}")
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
         log.info("GET /events/{}", id);
 

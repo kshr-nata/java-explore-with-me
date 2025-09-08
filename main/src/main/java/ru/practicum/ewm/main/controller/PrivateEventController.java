@@ -41,7 +41,7 @@ public class PrivateEventController {
         return eventService.createEvent(userId, newEventDto);
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping("{eventId}")
     public EventFullDto getEventByUserAndId(
             @PathVariable long userId,
             @PathVariable long eventId) {
@@ -49,7 +49,7 @@ public class PrivateEventController {
         return eventService.getEventByUserAndId(userId, eventId);
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping("{eventId}")
     public EventFullDto updateEventByUser(
             @PathVariable long userId,
             @PathVariable long eventId,

@@ -53,7 +53,7 @@ public class RequestService {
         List<EventRequest> requestsToUpdate = requestRepository.findAllById(updateRequest.getRequestIds());
 
         // 3. Проверяем, что все заявки принадлежат событию
-     //   validateRequestsBelongToEvent(requestsToUpdate, eventId);
+        validateRequestsBelongToEvent(requestsToUpdate, eventId);
 
         // 4. Обрабатываем в зависимости от статуса
         if (updateRequest.getStatus() == RequestStatus.CONFIRMED) {
@@ -148,9 +148,9 @@ public class RequestService {
 
     private EventRequestStatusUpdateResult confirmRequests(Event event, List<EventRequest> requestsToConfirm) {
         // Проверяем, требуется ли подтверждение заявок
-//        if (!isModerationRequired(event)) {
-//            throw new ConflictException("Для данного события подтверждение заявок не требуется");
-//        }
+        if (!isModerationRequired(event)) {
+            throw new ConflictException("Для данного события подтверждение заявок не требуется");
+        }
 
         // Проверяем, не достигнут ли лимит
         long confirmedCount = requestRepository.countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);

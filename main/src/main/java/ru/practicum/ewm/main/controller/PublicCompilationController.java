@@ -30,7 +30,7 @@ public class PublicCompilationController {
         return compilationService.getCompilationsWithEvents(pinned, from, size);
     }
 
-    @GetMapping("/{compId}")
+    @GetMapping("{compId}")
     public CompilationDto getCompilationById(@PathVariable Long compId) {
         log.info("GET /compilations/{}", compId);
         return compilationService.getCompilationById(compId);

@@ -35,7 +35,7 @@ public class PrivateRequestController {
         return requestService.createRequest(userId, eventId);
     }
 
-    @PatchMapping("/{requestId}/cancel")
+    @PatchMapping("{requestId}/cancel")
     public ParticipationRequestDto cancelRequest(
             @PathVariable Long userId,
             @PathVariable Long requestId) {
