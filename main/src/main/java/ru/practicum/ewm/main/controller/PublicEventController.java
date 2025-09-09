@@ -2,10 +2,13 @@ package ru.practicum.ewm.main.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.main.dto.CommentDto;
 import ru.practicum.ewm.main.dto.EventFullDto;
 import ru.practicum.ewm.main.dto.EventShortDto;
+import ru.practicum.ewm.main.service.CommentService;
 import ru.practicum.ewm.main.service.EventService;
 
 import java.time.LocalDateTime;
@@ -17,9 +20,12 @@ import java.util.List;
 public class PublicEventController {
 
     private final EventService eventService;
+    private final CommentService commentService;
 
-    public PublicEventController(EventService eventService) {
+    @Autowired
+    public PublicEventController(EventService eventService, CommentService commentService) {
         this.eventService = eventService;
+        this.commentService = commentService;
     }
 
     @GetMapping
@@ -47,6 +53,11 @@ public class PublicEventController {
         log.info("GET /events/{}", id);
 
         return eventService.getPublishedEventById(id, request);
+    }
+
+    @GetMapping("{id}/comments")
+    public List<CommentDto> getCommentsByEvent(@PathVariable Long id) {
+        return commentService.getCommentsByEvent(id);
     }
 
 }
